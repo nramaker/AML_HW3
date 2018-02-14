@@ -58,6 +58,44 @@ def show_image(image_vector):
     image = Image.fromarray(rgbArray)
     image.show()
 
+def compute_eigens(pca):
+    for eigenvalue, eigenvector in zip(pca.explained_variance_, pca.components_):    
+        print("")
+        print("Eigenvector: {}".format(eigenvector))
+        print("EigenValue: {}".format(eigenvalue))
+        print("Computed EigenValue: {}".format(np.dot(eigenvector.T, np.dot(pca.get_covariance(), eigenvector))))
+
+def compute_error(pca):
+    accuracy = 0.0
+    for val in pca.explained_variance_ratio_:
+        accuracy+=val
+    print("Error {}".format(1-accuracy))
+
+def calculate_reduced_images(images, n_components=20):
+    pca = PCA(n_components)
+    pca.fit(np.array(images))
+    # compute_eigens(pca)
+    compute_error(pca)
+    mean_image = pca.mean_
+    eigenvectors = pca.components_
+    print("eigenvectors.shape {}".format(eigenvectors.shape))
+    # eigenvalues = pca.explained_variance_
+
+    diffs = images - mean_image
+    
+    reduced_images = []
+    print("N {}".format(np.array(images).shape[0]))
+    for i in range(0, len(images)):
+        adjustment = 0
+        for j in range(n_components):
+            u = eigenvectors[j]
+            adjustment += u.T*diffs[i]*u 
+        reduced_images.append(mean_image + adjustment)
+        
+    print("reduced_images.shape {}".format(np.array(reduced_images).shape))
+    # print("diffs {}".format(diffs))
+
+    return reduced_images, mean_image
 
 #main entry
 if __name__ == "__main__":
@@ -66,7 +104,7 @@ if __name__ == "__main__":
     image_means = []
     image_files_by_category = []
 
-    pca = PCA(n_components=20, svd_solver='auto')
+    # pca = PCA(n_components=20)
     for i in range(0,1):
         #load all images of this class
         images = get_class_images_from_files(datafiles, i)
@@ -75,27 +113,15 @@ if __name__ == "__main__":
         image_files_by_category.append(images)
         print("")
 
-        pca.fit(np.array(images))
-        print("variance ratios {}".format(pca.explained_variance_ratio_)) 
-        print("singular values {}".format(pca.singular_values_))   
-        print("components {}".format(pca.components_))
-        print("mean_ {}".format(pca.mean_))
-        mean_image = pca.mean_
+        reduced_images, mean_image = calculate_reduced_images(images, 20)
 
-        print("###transforming images")
-        reduced_images = pca.fit_transform(images)
-        print("we got back {} images".format(reduced_images.shape))
-        print("reduced_image[0] {}".format(reduced_images[0]))
-        image_means.append(mean_image)
+        error_images = np.array(images) - np.array(reduced_images)
+
+        show_image(images[10])
+        show_image(reduced_images[10])
+        show_image(error_images[10])
+        show_image(mean_image)
 
 
 
-    # data1 = unpickle("./cifar-10-batches-py/data_batch_1")
-    # # print(data1.keys())
-    # filenames =data1[b'filenames']
-    # labels= data1[b'labels']
-    # print("First image label {}".format(labels[0]))
-    # first_image = data1[b'data'][0]
-
-    # show_image(first_image)
     

@@ -3,3 +3,5 @@ https://stackoverflow.com/questions/12570859/how-to-show-pil-images-on-the-scree
 check if list is empty - https://stackoverflow.com/questions/53513/how-do-i-check-if-a-list-is-empty
 splitting pill array - https://stackoverflow.com/questions/10443295/combine-3-separate-numpy-arrays-to-an-rgb-image-in-python
 scikit-learn pca -http://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html
+faces decomposition - http://scikit-learn.org/stable/auto_examples/decomposition/plot_faces_decomposition.html
+getting eigenvalues, vectors - https://stackoverflow.com/questions/31909945/obtain-eigen-values-and-vectors-from-sklearn-pca
