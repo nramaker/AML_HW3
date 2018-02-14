@@ -3,8 +3,22 @@ from PIL import Image
 import numpy as np
 #import pandas as pd
 
-def compute_mean_image(images, class_id):
-    pass
+def compute_mean_image(images):
+    # print("len(images) {}".format(len(images)))
+    count = len(images)
+
+
+    sum_of_images = np.zeros(3072)
+    # sum_of_images = [sum(x.T) for x in images]
+    for image in images:
+        sum_of_images +=image
+    # print("images[0] {}".format(images[0]))
+    # print("images[1] {}".format(images[1]))
+    # print("images[2] {}".format(images[2]))
+    # print("sum_of_images {}".format(sum_of_images))
+    mean_image = (sum_of_images/count).astype(int)
+    # return mean_image
+    return mean_image
 
 def compute_princ_comps(images):
     pass
@@ -31,22 +45,20 @@ def get_class_images_from_files(files, class_id):
         
         #filter out the non-class_ids 
         mask = (np.array(labels) == class_id)
-        # print("mask {}".format(mask[:10]))
         img_data = img_data[mask]
-        # print("Found {} images in this file.".format(len(img_data)))
-        # print("img_data {}".format(img_data[:10]))
 
         images = images + list(img_data)
-    return images
+    mean_image = compute_mean_image(images)
+    return (images, mean_image)
 
 def show_image(image_vector):
     arr = np.array(image_vector)
     redarr = arr[0:1024]
     greenarr = arr[1024:2048]
     bluearr = arr[2048:]
-    print("red array {}".format(redarr.shape))
-    print("green array {}".format(greenarr.shape))
-    print("blue array {}".format(bluearr.shape))
+    # print("red array {}".format(redarr.shape))
+    # print("green array {}".format(greenarr.shape))
+    # print("blue array {}".format(bluearr.shape))
     rgbArray = np.zeros((32,32,3), 'uint8')
     rgbArray[..., 0] = redarr.reshape((32,-1))
     rgbArray[..., 1] = greenarr.reshape((32,-1))
@@ -62,7 +74,9 @@ if __name__ == "__main__":
     image_means = []
     for i in range(0,10):
         #load all images of this class
-        images = get_class_images_from_files(datafiles, i)
+        images, mean_image = get_class_images_from_files(datafiles, i)
+        print("mean images for class {} is {}".format(i, mean_image))
+        show_image(mean_image)
         print("Found {} images of class {}".format(len(images), i))
         print("")
 
@@ -72,11 +86,6 @@ if __name__ == "__main__":
     labels= data1[b'labels']
     print("First image label {}".format(labels[0]))
     first_image = data1[b'data'][0]
-    # print("first_images shape {}".format(first_image.shape))
-    # print("first image {}".format(first_image))
 
-    # print(first_image)
     show_image(first_image)
     
-    # train_and_predict()
-    # show_plots()
