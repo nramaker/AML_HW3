@@ -2,24 +2,8 @@ from PIL import Image
 import numpy as np
 from sklearn.decomposition import PCA
 
-#import pandas as pd
-
-# def compute_mean_image(images):
-#     # print("len(images) {}".format(len(images)))
-#     count = len(images)
-
-#     sum_of_images = np.zeros(3072)
-#     for image in images:
-#         sum_of_images +=image
-#     mean_image = (sum_of_images/count).astype(int)
-#     # return mean_image
-#     return mean_image
-
-def compute_princ_comps(images):
-    pass
-
-def compute_distance(vector1, vector2):
-    pass
+import matplotlib.pyplot as plt
+from matplotlib.legend_handler import HandlerLine2D
 
 def create_2D_map(vector):
     pass
@@ -43,7 +27,6 @@ def get_class_images_from_files(files, class_id):
         img_data = img_data[mask]
 
         images = images + list(img_data)
-    #mean_image = compute_mean_image(images)
     return (images)
 
 def show_image(image_vector):
@@ -65,14 +48,6 @@ def compute_eigens(pca):
         print("EigenValue: {}".format(eigenvalue))
         print("Computed EigenValue: {}".format(np.dot(eigenvector.T, np.dot(pca.get_covariance(), eigenvector))))
 
-# def compute_error_method1(pca):
-#     accuracy = 0.0
-#     # print("explained variances {}".format(pca.explained_variance_))
-#     # print("explained variance ratios {}".format(pca.explained_variance_ratio_))
-#     for val in pca.explained_variance_ratio_:
-#         accuracy+=val
-#     print("Error of {} using Method 1".format(1-accuracy))
-
 def compute_error_method2(images, reduced_images, class_id):
     print("Calculating Errors using Method 2...")
 
@@ -92,23 +67,25 @@ def calculate_reduced_images(images, n_components=20):
     pca = PCA(n_components)
     pca.fit(np.array(images))
     mean_image = pca.mean_
-    eigenvectors = pca.components_
-    diffs = images - mean_image
-    
-    # reduced_images = []
-    # for i in range(0, len(images)):
-    #     adjustment = 0
-    #     for j in range(0, n_components):
-    #         u = eigenvectors[j]
-    #         adjustment += u.T*diffs[i]*u 
-    #     reduced_images.append(mean_image + adjustment)
 
     transformed = pca.transform(images)
-    print("transformed.shape {}".format(transformed.shape))
     inverse_transformed = pca.inverse_transform(transformed)
-    print("inverse_transformed.shape {}".format(inverse_transformed.shape))
 
     return inverse_transformed, mean_image
+
+def plot_category_errors(category_errors):
+    plt.figure(1)
+    
+    x = np.arange(len(category_errors))
+    print("x {}".format(x))
+    print("errors {}".format(category_errors))
+    plt.bar(x, category_errors)
+    plt.xticks(x, (x))
+        
+    plt.title('Error for each image category.')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
 #main entry
 if __name__ == "__main__":
@@ -116,35 +93,27 @@ if __name__ == "__main__":
     datafiles = ["./cifar-10-batches-py/data_batch_1","./cifar-10-batches-py/data_batch_2","./cifar-10-batches-py/data_batch_3","./cifar-10-batches-py/data_batch_4","./cifar-10-batches-py/data_batch_5","./cifar-10-batches-py/test_batch"]
     image_means = []
     image_files_by_category = []
+    category_errors = []
 
-    # pca = PCA(n_components=20)
-    for i in range(0,1):
+    for i in range(0,10):
         #load all images of this class
         print(" ")
         print("### Processing class {}".format(i))
         images = get_class_images_from_files(datafiles, i)
         print("Found {} images of class {}".format(len(images), i))
-        # show_image(mean_image)
         image_files_by_category.append(images)
-        # print("")
 
         print("Generating Reduced Images...")
-        reduced_images, mean_image = calculate_reduced_images(images, 3072)
-        print("Mean image[:10] {}".format(mean_image[:10]))
+        reduced_images, mean_image = calculate_reduced_images(images, 20)
+        error = compute_error_method2(images, reduced_images, i)
+        category_errors.append(error)
 
-        # man_mean_image = compute_mean_image(images)
-        # print("Manual Mean image[:10] {}".format(man_mean_image[:10]))
-        # print("Generated {} Reduced Images of class {}".format(len(reduced_images), i))
-        # print("Calculating Errors...")
-        # error_images = np.array(images) - np.array(reduced_images)
-        compute_error_method2(images, reduced_images, i)
-
-
-        show_image(images[0])
-        show_image(reduced_images[0])
+        # show_image(images[0])
+        # show_image(reduced_images[0])
         # show_image(error_images[10])
         # show_image(mean_image)
 
+    plot_category_errors(category_errors)
 
 
     
