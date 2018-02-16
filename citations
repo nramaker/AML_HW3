@@ -6,3 +6,5 @@ scikit-learn pca -http://scikit-learn.org/stable/modules/generated/sklearn.decom
 faces decomposition - http://scikit-learn.org/stable/auto_examples/decomposition/plot_faces_decomposition.html
 getting eigenvalues, vectors - https://stackoverflow.com/questions/31909945/obtain-eigen-values-and-vectors-from-sklearn-pca
 matplotlib bar chart - https://matplotlib.org/devdocs/api/_as_gen/matplotlib.pyplot.bar.html
+MDS scikit-learn - http://scikit-learn.org/stable/modules/generated/sklearn.manifold.MDS.html
+http://scikit-learn.org/stable/auto_examples/manifold/plot_mds.html

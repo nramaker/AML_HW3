@@ -1,6 +1,8 @@
 from PIL import Image
 import numpy as np
 from sklearn.decomposition import PCA
+from sklearn import manifold
+from sklearn.metrics import euclidean_distances
 
 import matplotlib.pyplot as plt
 from matplotlib.legend_handler import HandlerLine2D
@@ -77,8 +79,8 @@ def plot_category_errors(category_errors):
     plt.figure(1)
     
     x = np.arange(len(category_errors))
-    print("x {}".format(x))
-    print("errors {}".format(category_errors))
+    # print("x {}".format(x))
+    # print("errors {}".format(category_errors))
     plt.bar(x, category_errors)
     plt.xticks(x, (x))
         
@@ -87,11 +89,33 @@ def plot_category_errors(category_errors):
     plt.grid(True)
     plt.show()
 
+def calc_and_plot_mds(mean_images, n_components=20):
+    seed = 42
+    similarities = euclidean_distances(mean_images)
+
+    mds = manifold.MDS(n_components=n_components, max_iter=3000, eps=1e-9, random_state=seed,
+                   dissimilarity="precomputed", n_jobs=1)
+    pos = mds.fit(similarities).embedding_
+
+    labels = []
+    for i in range(0, len(mean_images)):
+        labels.append("Category {}".format(i))
+
+    x = pos[:, 0]
+    y = pos[:, 1]
+    fig, ax = plt.subplots()
+    ax.scatter(x, y, color='cyan', s=100, lw=0)
+    ax.set_title('Mean Images Similarities')
+    ax.legend(loc='best')
+    for i, txt in enumerate(labels):
+        ax.annotate(txt, (x[i],y[i]))
+    plt.show()
+
 #main entry
 if __name__ == "__main__":
     print(" ##### AML HW2 SVM Classifier  ##### ")
     datafiles = ["./cifar-10-batches-py/data_batch_1","./cifar-10-batches-py/data_batch_2","./cifar-10-batches-py/data_batch_3","./cifar-10-batches-py/data_batch_4","./cifar-10-batches-py/data_batch_5","./cifar-10-batches-py/test_batch"]
-    image_means = []
+    mean_images= []
     image_files_by_category = []
     category_errors = []
 
@@ -107,6 +131,7 @@ if __name__ == "__main__":
         reduced_images, mean_image = calculate_reduced_images(images, 20)
         error = compute_error_method2(images, reduced_images, i)
         category_errors.append(error)
+        mean_images.append(mean_image)
 
         # show_image(images[0])
         # show_image(reduced_images[0])
@@ -114,6 +139,7 @@ if __name__ == "__main__":
         # show_image(mean_image)
 
     plot_category_errors(category_errors)
+    calc_and_plot_mds(mean_images)
 
 
     
