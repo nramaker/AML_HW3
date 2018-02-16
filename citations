@@ -8,3 +8,5 @@ getting eigenvalues, vectors - https://stackoverflow.com/questions/31909945/obta
 matplotlib bar chart - https://matplotlib.org/devdocs/api/_as_gen/matplotlib.pyplot.bar.html
 MDS scikit-learn - http://scikit-learn.org/stable/modules/generated/sklearn.manifold.MDS.html
 http://scikit-learn.org/stable/auto_examples/manifold/plot_mds.html
+https://stackoverflow.com/questions/12487060/matplotlib-color-according-to-class-labels
+https://stackoverflow.com/questions/14432557/matplotlib-scatter-plot-with-different-text-at-each-data-point

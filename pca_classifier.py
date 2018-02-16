@@ -79,12 +79,10 @@ def plot_category_errors(category_errors):
     plt.figure(1)
     
     x = np.arange(len(category_errors))
-    # print("x {}".format(x))
-    # print("errors {}".format(category_errors))
     plt.bar(x, category_errors)
     plt.xticks(x, (x))
         
-    plt.title('Error for each image category.')
+    plt.title('Error for each image category. (Part 1)')
     plt.legend()
     plt.grid(True)
     plt.show()
@@ -92,6 +90,8 @@ def plot_category_errors(category_errors):
 def calc_and_plot_mds(mean_images, n_components=20):
     seed = 42
     similarities = euclidean_distances(mean_images)
+    print("similarity_matrix.shape {}".format(np.array(similarities).shape))
+    print("similarity_matrix {}".format(similarities))
 
     mds = manifold.MDS(n_components=n_components, max_iter=3000, eps=1e-9, random_state=seed,
                    dissimilarity="precomputed", n_jobs=1)
@@ -105,11 +105,82 @@ def calc_and_plot_mds(mean_images, n_components=20):
     y = pos[:, 1]
     fig, ax = plt.subplots()
     ax.scatter(x, y, color='cyan', s=100, lw=0)
-    ax.set_title('Mean Images Similarities')
+    ax.set_title('Mean Image Similarities (Part 2)')
     ax.legend(loc='best')
     for i, txt in enumerate(labels):
         ax.annotate(txt, (x[i],y[i]))
     plt.show()
+
+def plot_manual_sim_matrix(similarities, n_components=20):
+    seed = 42
+
+    mds = manifold.MDS(n_components=n_components, max_iter=3000, eps=1e-9, random_state=seed,
+                   dissimilarity="precomputed", n_jobs=1)
+    pos = mds.fit(similarities).embedding_
+
+    labels = []
+    for i in range(0, len(mean_images)):
+        labels.append("Category {}".format(i))
+
+    x = pos[:, 0]
+    y = pos[:, 1]
+    fig, ax = plt.subplots()
+    ax.scatter(x, y, color='cyan', s=100, lw=0)
+    ax.set_title('Mean Image Similarities (Part 3)')
+    ax.legend(loc='best')
+    for i, txt in enumerate(labels):
+        ax.annotate(txt, (x[i],y[i]))
+    plt.show()
+
+def E(A, B, n_components=20):
+    pca_A = PCA(n_components)
+    pca_A.fit(np.array(A))
+    mean_A = pca_A.mean_
+
+    pca_B = PCA(n_components)
+    pca_B.fit(np.array(B))
+    pca_B.mean_=mean_A
+
+    transformed = pca_B.transform(A)
+    inverse_transformed = pca_B.inverse_transform(transformed)
+
+    error_vector = np.array(A) - np.array(inverse_transformed)
+    N =len(error_vector)
+    squares = []
+    # print("Computing squares of errors...")
+    for i in range(0, len(error_vector)):
+        squares.append(list(map(lambda x: x*x, error_vector[i])))
+    # print("Computing sums of squares...")
+    sums = list(map(lambda x: sum(x), squares))
+    error = sum(sums)/N
+    # print("Found mean error of {} for class_id {}".format(error, class_id))
+    return error
+
+def similarity(A, B):
+    return (E(A,B) + E(B,A))/2
+
+def calc_sim_matrix(categories):
+    cat_count = len(categories)
+    matrix = []
+    for i in range(0, cat_count):
+        row = []
+        for j in range(0, cat_count):
+            if i >= j:
+                row.append(0.0)
+            else:
+                print("Calculating the similarities between catagories {} and {}".format(i,j))
+                row.append(similarity(categories[i], categories[j]))
+        matrix.append(row)
+    #TODO : make symetrical
+    for i in range(0, cat_count):
+        for j in range(0, cat_count):
+            if i >= j:
+                pass
+            else:
+                matrix[j][i] = matrix[i][j]
+    return matrix
+
+
 
 #main entry
 if __name__ == "__main__":
@@ -119,7 +190,7 @@ if __name__ == "__main__":
     image_files_by_category = []
     category_errors = []
 
-    for i in range(0,10):
+    for i in range(0,3):
         #load all images of this class
         print(" ")
         print("### Processing class {}".format(i))
@@ -140,6 +211,13 @@ if __name__ == "__main__":
 
     plot_category_errors(category_errors)
     calc_and_plot_mds(mean_images)
+
+    print(" ")
+    print("Manually Calculating Category Similarities")
+    similarity_matrix = calc_sim_matrix(image_files_by_category)
+    print("similarity_matrix.shape {}".format(np.array(similarity_matrix).shape))
+    print("similarity_matrix {}".format(similarity_matrix))
+    plot_manual_sim_matrix(similarity_matrix)
 
 
     
