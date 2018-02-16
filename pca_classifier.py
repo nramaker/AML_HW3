@@ -135,25 +135,29 @@ def plot_manual_sim_matrix(similarities, n_components=20):
 def E(A, B, n_components=20):
     pca_A = PCA(n_components)
     pca_A.fit(np.array(A))
-    mean_A = pca_A.mean_
 
     pca_B = PCA(n_components)
     pca_B.fit(np.array(B))
-    pca_B.mean_=mean_A
+    
+    #This approach tries to use the eigenvector and eiganvalues from B
+    pca_A.components_ = pca_B.components_
+    pca_A.explained_variance_ = pca_B.explained_variance_
+    transformed = pca_A.transform(A)
+    inverse_transformed = pca_A.inverse_transform(transformed)
 
-    transformed = pca_B.transform(A)
-    inverse_transformed = pca_B.inverse_transform(transformed)
+    #This approach tries to use pca_B with mean_A
+    # pca_B.mean_=pca_A.mean_
+    # transformed = pca_B.transform(A)
+    # inverse_transformed = pca_B.inverse_transform(transformed)
 
     error_vector = np.array(A) - np.array(inverse_transformed)
     N =len(error_vector)
     squares = []
-    # print("Computing squares of errors...")
+
     for i in range(0, len(error_vector)):
         squares.append(list(map(lambda x: x*x, error_vector[i])))
-    # print("Computing sums of squares...")
     sums = list(map(lambda x: sum(x), squares))
     error = sum(sums)/N
-    # print("Found mean error of {} for class_id {}".format(error, class_id))
     return error
 
 def similarity(A, B):
@@ -171,7 +175,6 @@ def calc_sim_matrix(categories):
                 print("Calculating the similarities between catagories {} and {}".format(i,j))
                 row.append(similarity(categories[i], categories[j]))
         matrix.append(row)
-    #TODO : make symetrical
     for i in range(0, cat_count):
         for j in range(0, cat_count):
             if i >= j:
@@ -190,7 +193,7 @@ if __name__ == "__main__":
     image_files_by_category = []
     category_errors = []
 
-    for i in range(0,3):
+    for i in range(0,10):
         #load all images of this class
         print(" ")
         print("### Processing class {}".format(i))
@@ -209,12 +212,13 @@ if __name__ == "__main__":
         # show_image(error_images[10])
         # show_image(mean_image)
 
-    plot_category_errors(category_errors)
-    calc_and_plot_mds(mean_images)
 
     print(" ")
     print("Manually Calculating Category Similarities")
     similarity_matrix = calc_sim_matrix(image_files_by_category)
+
+    plot_category_errors(category_errors)
+    calc_and_plot_mds(mean_images)
     print("similarity_matrix.shape {}".format(np.array(similarity_matrix).shape))
     print("similarity_matrix {}".format(similarity_matrix))
     plot_manual_sim_matrix(similarity_matrix)
