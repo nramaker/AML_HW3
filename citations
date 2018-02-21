@@ -1,12 +1,20 @@
-https://www.python-course.eu/dictionaries.php
+
+Used for displaying image with PIL
 https://stackoverflow.com/questions/12570859/how-to-show-pil-images-on-the-screen
-check if list is empty - https://stackoverflow.com/questions/53513/how-do-i-check-if-a-list-is-empty
 splitting pill array - https://stackoverflow.com/questions/10443295/combine-3-separate-numpy-arrays-to-an-rgb-image-in-python
+
+Used for PCA with Scikit-learn
 scikit-learn pca -http://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html
 faces decomposition - http://scikit-learn.org/stable/auto_examples/decomposition/plot_faces_decomposition.html
 getting eigenvalues, vectors - https://stackoverflow.com/questions/31909945/obtain-eigen-values-and-vectors-from-sklearn-pca
-matplotlib bar chart - https://matplotlib.org/devdocs/api/_as_gen/matplotlib.pyplot.bar.html
+
+Used for MDS with Scikit-learn
 MDS scikit-learn - http://scikit-learn.org/stable/modules/generated/sklearn.manifold.MDS.html
+
+Charting example with Scikit-learn
 http://scikit-learn.org/stable/auto_examples/manifold/plot_mds.html
+
+Charting examples with Matplot lib
+matplotlib bar chart - https://matplotlib.org/devdocs/api/_as_gen/matplotlib.pyplot.bar.html
 https://stackoverflow.com/questions/12487060/matplotlib-color-according-to-class-labels
 https://stackoverflow.com/questions/14432557/matplotlib-scatter-plot-with-different-text-at-each-data-point

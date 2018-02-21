@@ -193,7 +193,7 @@ if __name__ == "__main__":
     image_files_by_category = []
     category_errors = []
 
-    for i in range(0,10):
+    for i in range(0, 10):
         #load all images of this class
         print(" ")
         print("### Processing class {}".format(i))
@@ -209,7 +209,8 @@ if __name__ == "__main__":
 
         # show_image(images[0])
         # show_image(reduced_images[0])
-        # show_image(error_images[10])
+        # error_images = images-reduced_images
+        # show_image(error_images[0])
         # show_image(mean_image)
 
 
